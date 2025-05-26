@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),  // порт должен быть числом
+  port: Number(process.env.SMTP_PORT),
   secure: true,
   auth: {
     user: process.env.SMTP_USER,
@@ -20,7 +20,6 @@ const transporter = nodemailer.createTransport({
 app.post('/api/payment-request', async (req, res) => {
   const { name, email, amount } = req.body;
 
-  // Проверка, что есть email и amount
   if (!amount || !email) {
     return res.status(400).json({ error: 'Missing fields' });
   }
@@ -29,26 +28,30 @@ app.post('/api/payment-request', async (req, res) => {
     const response = await axios.post(
       process.env.TOCHKA_API_URL,
       {
+        payee: {
+          bankCode: process.env.TOCHKA_BANK_CODE,
+          account: process.env.TOCHKA_ACCOUNT,
+        },
         amount,
-        // Обрати внимание — здесь правильные обратные кавычки и оператор || для значения по умолчанию
-        purpose: `Оплата от ${name || 'клиент'} на сумму ${amount}`,
+        qrType: 'QRDynamic',
+        purpose: process.env.TOCHKA_PAYMENT_PURPOSE,
+        mcc: process.env.TOCHKA_MCC,
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.TOCHKA_API_TOKEN}`, // Обязательно в кавычках и с обратными кавычками для шаблона
+          Authorization: `Bearer ${process.env.TOCHKA_API_TOKEN}`,
           'Content-Type': 'application/json',
         },
       }
     );
 
-    // Берём ссылку на QR из ответа, если нет — дефолтная ссылка
-    const qrLink = response.data?.url || 'https://bank.tochka.com/';
+    const qrLink = response.data?.url || 'https://tochka.com/';
 
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: email,
       subject: 'Ссылка на оплату',
-      html: `<p>Здравствуйте!</p><p>Оплатите по ссылке: <a href="${qrLink}">${qrLink}</a></p>`, // Строка HTML в кавычках
+      html: `<p>Здравствуйте!</p><p>Оплатите по ссылке: <a href="${qrLink}">${qrLink}</a></p>`,
     });
 
     res.json({ success: true, qr: qrLink });
