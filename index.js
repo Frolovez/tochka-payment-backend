@@ -29,13 +29,12 @@ app.post('/api/payment-request', async (req, res) => {
       process.env.TOCHKA_API_URL,
       {
         payee: {
-          bankCode: process.env.TOCHKA_BANK_CODE,
-          account: process.env.TOCHKA_ACCOUNT,
+          account: process.env.accountId,
         },
         amount,
         qrType: 'QRDynamic',
-        purpose: process.env.TOCHKA_PAYMENT_PURPOSE,
-        mcc: process.env.TOCHKA_MCC,
+        purpose: process.env.paymentPurpose,
+        mcc: process.env.merchantId,
       },
       {
         headers: {
