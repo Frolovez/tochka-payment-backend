@@ -25,16 +25,21 @@ app.post('/api/payment-request', async (req, res) => {
   }
 
   try {
+    const apiUrl = `https://enter.tochka.com/uapi/sbp/${process.env.TOCHKA_API_VERSION}/qr-code/${process.env.TOCHKA_LEGAL_ID}`;
+
     const response = await axios.post(
-      process.env.TOCHKA_API_URL,
+      apiUrl,
       {
-        payee: {
-          account: process.env.accountId,
+        amount: Number(amount),
+        currency: 'RUB',
+        paymentPurpose: process.env.TOCHKA_PAYMENT_PURPOSE || `Оплата от ${name || 'клиента'} на сумму ${amount}`,
+        qrcType: '02', // QR-Dynamic
+        mcc: process.env.TOCHKA_MCC,
+        imageParams: {
+          sourceName: 'your-app-name', // можно заменить на свой источник
         },
-        amount,
-        qrType: 'QRDynamic',
-        purpose: process.env.paymentPurpose,
-        mcc: process.env.merchantId,
+        ttl: 30, // Время жизни QR в минутах
+        redirectUrl: process.env.REDIRECT_URL || 'https://your-redirect-url.com',
       },
       {
         headers: {
@@ -55,7 +60,7 @@ app.post('/api/payment-request', async (req, res) => {
 
     res.json({ success: true, qr: qrLink });
   } catch (err) {
-    console.error(err);
+    console.error(err.response?.data || err.message);
     res.status(500).json({ error: 'Ошибка при генерации QR или отправке письма' });
   }
 });
