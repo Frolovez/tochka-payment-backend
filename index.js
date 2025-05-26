@@ -26,7 +26,7 @@ app.post('/api/payment-request', async (req, res) => {
       process.env.TOCHKA_API_URL,
       {
         amount,
-        purpose: Оплата от ${name || 'клиент'} на сумму ${amount}?,
+        purpose: ╨Ю╨┐╨╗╨░╤В╨░ ╨╛╤В ${name || '╨║╨╗╨╕╨╡╨╜╤В'} ╨╜╨░ ╤Б╤Г╨╝╨╝╤Г ${amount}?,
       },
       {
         headers: {
@@ -41,17 +41,17 @@ app.post('/api/payment-request', async (req, res) => {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: email,
-      subject: 'Ссылка на оплату',
-      html: <p>Здравствуйте!</p><p>Оплатите по ссылке: <a href="${qrLink}">${qrLink}</a></p>,
+      subject: '╨б╤Б╤Л╨╗╨║╨░ ╨╜╨░ ╨╛╨┐╨╗╨░╤В╤Г',
+      html: <p>╨Ч╨┤╤А╨░╨▓╤Б╤В╨▓╤Г╨╣╤В╨╡!</p><p>╨Ю╨┐╨╗╨░╤В╨╕╤В╨╡ ╨┐╨╛ ╤Б╤Б╤Л╨╗╨║╨╡: <a href="${qrLink}">${qrLink}</a></p>,
     });
 
     res.json({ success: true, qr: qrLink });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Ошибка при генерации QR или отправке письма' });
+    res.status(500).json({ error: '╨Ю╤И╨╕╨▒╨║╨░ ╨┐╤А╨╕ ╨│╨╡╨╜╨╡╤А╨░╤Ж╨╕╨╕ QR ╨╕╨╗╨╕ ╨╛╤В╨┐╤А╨░╨▓╨║╨╡ ╨┐╨╕╤Б╤М╨╝╨░' });
   }
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log('Сервер запущен');
+  console.log('╨б╨╡╤А╨▓╨╡╤А ╨╖╨░╨┐╤Г╤Й╨╡╨╜');
 });
