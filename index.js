@@ -26,7 +26,7 @@ app.post('/api/payment-request', async (req, res) => {
       process.env.TOCHKA_API_URL,
       {
         amount,
-        purpose: Оплата от ${name || 'клиент'} на сумму ${amount}?,
+        purpose: `Оплата от ${name || 'клиент'} на сумму ${amount}?`,
       },
       {
         headers: {
